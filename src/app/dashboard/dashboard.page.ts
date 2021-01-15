@@ -58,8 +58,8 @@ export class DashboardPage implements OnInit {
       this.chats = [];
       const key = '';
       messagesSnap.forEach( ( messageData ) => {
-        if ( messageData.val().message ) {
-          this.decryptText(messageData.val().message);
+        if( messageData.val().message ) {
+          this.decryptText( messageData.val().message );
           this.chats.push( {
             uid: messageData.val().uid,
             email: messageData.val().email,
@@ -75,7 +75,7 @@ export class DashboardPage implements OnInit {
           } );
         }
 
-        console.log( 'image', messageData.val().message );
+        console.log( 'mensaje', messageData.val().message );
       } );
     } );
 
