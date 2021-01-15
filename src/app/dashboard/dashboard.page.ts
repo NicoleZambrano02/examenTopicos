@@ -26,9 +26,6 @@ export class DashboardPage implements OnInit {
 
   tmpImage: any = undefined;
 
-  key = CryptoJS.enc.Hex.parse( '123456789012345' );
-  iv = CryptoJS.enc.Hex.parse( '123456789012345' );
-;
   encryptedText = '';
   decryptedText = '';
 
@@ -58,7 +55,7 @@ export class DashboardPage implements OnInit {
       this.chats = [];
       const key = '';
       messagesSnap.forEach( ( messageData ) => {
-        if( messageData.val().message ) {
+        if ( messageData.val().message ) {
           this.decryptText( messageData.val().message );
           this.chats.push( {
             uid: messageData.val().uid,
@@ -67,10 +64,11 @@ export class DashboardPage implements OnInit {
             date: messageData.val().date
           } );
         } else {
+          this.decryptText( messageData.val().image );
           this.chats.push( {
             uid: messageData.val().uid,
             email: messageData.val().email,
-            image: messageData.val().image,
+            image: this.decryptedText,
             date: messageData.val().date
           } );
         }
@@ -103,15 +101,14 @@ export class DashboardPage implements OnInit {
         .then( async( imageData ) => {
           console.log( 'IMAGE DATA', imageData );
           this.tmpImage = 'data:image/jpeg;base64,' + imageData;
-          const putPictures = firebase.storage().ref( 'imagesMessage/' + this.imageId + '.jpeg' );
+          const putPictures = firebase.storage().ref( 'messages/' + this.imageId + '.jpeg' );
           putPictures.putString( this.tmpImage, 'data_url' ).then( ( snapshot ) => {
             console.log( 'snapshot', snapshot.ref );
           } );
-          const getPicture = firebase.storage().ref( 'imagesMessage/' + this.imageId + '.jpeg' ).getDownloadURL();
+          const getPicture = firebase.storage().ref( 'messages/' + this.imageId + '.jpeg' ).getDownloadURL();
           getPicture.then( ( url ) => {
             this.message = url;
           } );
-          // this.tmp_image = file_uri;
         } )
         .catch( ( e ) => {
           console.log( e );
@@ -145,28 +142,31 @@ export class DashboardPage implements OnInit {
     await actionSheet.present();
   }
 
+  // Encriptar
   encryptText( text ) {
     this.encryptedText = CryptoJS.AES.encrypt( text, '#theKey#', '#theKey#' ).toString();
     console.log( 'texto encriptado', this.encryptedText );
   }
 
+  // Desencriptar
   decryptText( text ) {
     this.decryptedText = CryptoJS.AES.decrypt( text, '#theKey#', '#theKey#' )
       .toString( CryptoJS.enc.Utf8 );
     console.log( 'desencriptado', this.decryptedText );
   }
 
+  // Enviar mensaje
   async sendMessage() {
     let chat = {};
+    this.encryptText( this.message );
     if( this.tmpImage !== undefined ) {
       chat = {
         uid: this.id,
         email: this.userEmail,
-        image: this.message,
+        image: this.encryptedText,
         date: Date.now()
       };
     } else {
-      this.encryptText( this.message );
       chat = {
         uid: this.id,
         email: this.userEmail,
@@ -183,6 +183,7 @@ export class DashboardPage implements OnInit {
     }
   }
 
+  // Cerrar sesión
   logout() {
     this.authService.logoutUser()
       .then( res => {
