@@ -6,6 +6,7 @@ import { AuthenticateService } from '../services/authentication.service';
 import * as moment from 'moment';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import firebase from 'firebase';
+import * as CryptoJS from 'crypto-js';
 
 // @ts-ignore
 @Component( {
@@ -24,6 +25,12 @@ export class DashboardPage implements OnInit {
   imageId = Math.floor( Math.random() * 500 );
 
   tmpImage: any = undefined;
+
+  key = CryptoJS.enc.Hex.parse( '123456789012345' );
+  iv = CryptoJS.enc.Hex.parse( '123456789012345' );
+;
+  encryptedText = '';
+  decryptedText = '';
 
   constructor(
     private navCtrl: NavController,
@@ -49,9 +56,26 @@ export class DashboardPage implements OnInit {
 
     this.chatService.getMessages().on( 'value', ( messagesSnap ) => {
       this.chats = [];
+      const key = '';
       messagesSnap.forEach( ( messageData ) => {
-        this.chats.push( { ...messageData.val() } );
-        console.log( 'image', messageData.val() );
+        if ( messageData.val().message ) {
+          this.decryptText(messageData.val().message);
+          this.chats.push( {
+            uid: messageData.val().uid,
+            email: messageData.val().email,
+            message: this.decryptedText,
+            date: messageData.val().date
+          } );
+        } else {
+          this.chats.push( {
+            uid: messageData.val().uid,
+            email: messageData.val().email,
+            image: messageData.val().image,
+            date: messageData.val().date
+          } );
+        }
+
+        console.log( 'image', messageData.val().message );
       } );
     } );
 
@@ -121,6 +145,16 @@ export class DashboardPage implements OnInit {
     await actionSheet.present();
   }
 
+  encryptText( text ) {
+    this.encryptedText = CryptoJS.AES.encrypt( text, '#theKey#', '#theKey#' ).toString();
+    console.log( 'texto encriptado', this.encryptedText );
+  }
+
+  decryptText( text ) {
+    this.decryptedText = CryptoJS.AES.decrypt( text, '#theKey#', '#theKey#' )
+      .toString( CryptoJS.enc.Utf8 );
+    console.log( 'desencriptado', this.decryptedText );
+  }
 
   async sendMessage() {
     let chat = {};
@@ -132,10 +166,11 @@ export class DashboardPage implements OnInit {
         date: Date.now()
       };
     } else {
+      this.encryptText( this.message );
       chat = {
         uid: this.id,
         email: this.userEmail,
-        message: this.message,
+        message: this.encryptedText,
         date: Date.now()
       };
     }
