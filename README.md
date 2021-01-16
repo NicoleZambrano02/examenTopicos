@@ -213,3 +213,5 @@ Las opciones que se despliegan son la cámara, seleccionar una imagen y cancelar
 
 Para generar la apk y probarla se utiliza ```ionic cordova build android```
 
+La apk se encuentra en el siguiente link https://drive.google.com/drive/folders/1KQZP1rxLrQn12gWwJjxtZZdPoRK0E6NL?usp=sharing
+
