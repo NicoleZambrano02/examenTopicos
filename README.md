@@ -8,7 +8,8 @@ Se crea un formulario con email y contraseña con las validaciones correspondien
   
 La función tryRegister permite hacer el registro del usuario mediante el método registeruser proporcionado por AuthenticateService, caso contrario se mostrará un mensaje de error.
   
- ```tryRegister(value) {
+ ```
+ tryRegister(value) {
     this.authService.registerUser(value)
       .then(res => {
         console.log(res);
@@ -27,7 +28,8 @@ Para el inicio de sesión se crea un nuevo formulario con los mismos campos y va
   
 La función loginUser permite iniciar sesión con el método loginUser proporcionado por AuthenticateService.
 
- ```loginUser(value) {
+ ```
+ loginUser(value) {
     this.authService.loginUser(value)
       .then(res => {
         console.log(res);
@@ -45,7 +47,8 @@ Para el chat en firebase.service se crean dos funciones para interactuar con los
 
 En el caso de almacenar se utiliza la función sendMessage con ayuda de AngularFireDatabase, mientras que para obtener los datos se utiliza la función getMessages.
 
- ```sendMessage( data ) {
+ ```
+ sendMessage( data ) {
     return this.afdb.list( '/messages/' ).push( data );
   }
   
@@ -56,7 +59,8 @@ En el caso de almacenar se utiliza la función sendMessage con ayuda de AngularF
   
 Estos métodos van a ser utilizados en el chat. Aquí se realizan funciones para encriptar y desencriptar los mensajes con ayuda de crypto-js. La función de encriptar es encryptText y para desencriptar se tiene decryptText.
 
- ```encryptText( text ) {
+ ```
+ encryptText( text ) {
     this.encryptedText = CryptoJS.AES.encrypt( text, '#theKey#', '#theKey#' ).toString();
     console.log( 'texto encriptado', this.encryptedText );
   }
@@ -69,7 +73,8 @@ Estos métodos van a ser utilizados en el chat. Aquí se realizan funciones para
   ```
 Posteriormente al cargar la página se cargan los datos del usuario autenticado para alamacenar el id y el email del mismo que servirá para almacenarlo en la base de datos.
 
- ```this.authService.userDetails().subscribe( res => {
+ ```
+ this.authService.userDetails().subscribe( res => {
       console.log( 'res', res );
       if ( res !== null ) {
         this.userEmail = res.email;
@@ -84,7 +89,8 @@ Posteriormente al cargar la página se cargan los datos del usuario autenticado 
   
 A la par se obtienen los datos llamando al método creado en firebase.service y se utiliza las función de desencriptar para mostrar los mensajes reales en la pantalla y se almacenan dentro de un arreglo dependiendo si es imagen o message.
 
-```this.chatService.getMessages().on( 'value', ( messagesSnap ) => {
+```
+this.chatService.getMessages().on( 'value', ( messagesSnap ) => {
       this.chats = [];
       messagesSnap.forEach( ( messageData ) => {
         if ( messageData.val().message ) {
@@ -112,7 +118,8 @@ A la par se obtienen los datos llamando al método creado en firebase.service y 
   
 Para tomar foto se utiliza la función TakePhoto que va a permitir almacenar la imágen en el storage de firebase y se va a obtener la url de la misma para almacenarla en la base de datos.
 
-```takePhoto( sourceType ) {
+```
+takePhoto( sourceType ) {
     try {
       const options: CameraOptions = {
         quality: 50,
@@ -151,7 +158,8 @@ Para tomar foto se utiliza la función TakePhoto que va a permitir almacenar la 
 
 Finalmente, la función para enviar el mensaje sendMessage que va a permitir almacenar los datos en un arreglo, con el mensaje o imagen encriptado dependiendo del caso y va a utilizar la función creada en firebase.service para guardar los datos en la base de datos.
 
-```async sendMessage() {
+```
+async sendMessage() {
     let chat = {};
     this.encryptText( this.message );
     if ( this.tmpImage !== undefined ) {
@@ -181,7 +189,8 @@ Finalmente, la función para enviar el mensaje sendMessage que va a permitir alm
   
 Para cerrar sesión se utiliza la función logout.
 
-```logout() {
+```
+logout() {
     this.authService.logoutUser()
       .then( res => {
         console.log( res );
