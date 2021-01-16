@@ -201,6 +201,22 @@ logout() {
       } );
   }
   ```
+IMAGENES SEGURAS.
+
+En el storage de firebase se agregan reglas para leer y escribir en donde el usuario que realiza las peticiones deberá estar autenticado y la imagen debe tener el formate image/jpeg.
+
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /messages/{imageId=**} {
+      allow read, write: if request.auth !== null;
+      allow write: if resource.contentType('image/jpeg')
+    }
+  }
+}
+```
+
 FUNCIONAMIENTO EN CELULAR
 
 La aplicación inicia con la pantalla de inicio de sesión que contiene dos inputs para el email y la contraseña, en caso de no tener un usuario previamente creado, existe la opción de registrar un usuario.
