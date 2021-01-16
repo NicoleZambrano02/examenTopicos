@@ -1,4 +1,4 @@
-# Chat en Inonic con autenticación en Firebase.
+# Chat en Ionic con autenticación en Firebase.
 
 COMPONENTES.
 
